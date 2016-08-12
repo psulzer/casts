@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="casts_main:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/casts_main_jar</output-path>
+    <root id="archive" name="casts_main.jar">
+      <element id="module-output" name="casts_main" />
+    </root>
+  </artifact>
+</component>
