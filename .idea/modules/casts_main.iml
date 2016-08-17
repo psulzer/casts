@@ -9,6 +9,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Gradle: javax.validation:validation-api:1.0.0.GA" level="project" />
+    <orderEntry type="library" name="Gradle: javax.validation:validation-api:1.1.0.Final" level="project" />
   </component>
 </module>
