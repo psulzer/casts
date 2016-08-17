@@ -19,6 +19,7 @@ import org.junit.rules.ExpectedException;
 public class IntBox_setTest1 {
     @Test
     public void tryParse_test() {
+        System.out.printf("*** In tryParse_test(): ***%n");
         // IntBox ib = new IntBox(); // Old. New with static fabric method:
         IntBox ib = IntBox.makeIntBox(); // static members are initialized
         assertEquals(0,ib.get());
@@ -62,22 +63,33 @@ public class IntBox_setTest1 {
         b=IntBox.tryParse(s,ib);
         assertEquals(true,b);
         assertEquals(i,ib.v());
-        b=IntBox.tryParseWithTable(s,ib);
-        assertEquals(true,b);
-        assertEquals(i,ib.v());
         i=-20034;
         s=String.valueOf(i);
-        b=IntBox.tryParseWithTable(s,ib);
-        assertEquals(true,b);
-        assertEquals(i,ib.v());
         b=IntBox.tryParse(s,ib);
         assertEquals(true,b);
         assertEquals(i,ib.v());
+        s = "0"+String.valueOf(Integer.MAX_VALUE);
+        b=IntBox.tryParse(s,ib);
+        assertEquals(true,b);
+        assertEquals(Integer.MAX_VALUE,ib.v());
+        s="00000"+String.valueOf(Integer.MAX_VALUE);
+        b=IntBox.tryParse(s,ib);
+        assertEquals(true,b);
+        assertEquals(Integer.MAX_VALUE,ib.v());
+        s="-"+"0"+String.valueOf(Integer.MIN_VALUE).substring(1);
+        b=IntBox.tryParse(s,ib);
+        assertEquals(true,b);
+        assertEquals(Integer.MIN_VALUE,ib.v());
+        s="-"+"00000"+String.valueOf(Integer.MIN_VALUE).substring(1);
+        assertEquals(true,b);
+        assertEquals(Integer.MIN_VALUE,ib.v());
+        System.out.printf("END of tryParse_test()%n");
     }
     
     @Test
     public void set_test() { // tests also clone()
         // test default constructor:
+        System.out.printf("*** In set_test(): ***%n");
         IntBox ib=IntBox.makeIntBox((long)Integer.MAX_VALUE+1L,0);
         assertEquals(0,ib.v());
         assertEquals(0,ib.get());
@@ -96,6 +108,7 @@ public class IntBox_setTest1 {
     public final ExpectedException exception = ExpectedException.none();
     @Test
     public void useUnsetIntBox_test() { //
+        System.out.printf("*** In useUnsetIntBox_test(): ***%n");
         IntBox ib;
         // Following line will NOT compile :-)
         // IntBox.tryParse("Dummy",ib);

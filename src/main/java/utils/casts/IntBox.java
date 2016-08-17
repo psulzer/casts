@@ -110,7 +110,13 @@
  * @author Peter Sulzer
  * Copyright (c) 2016, Peter Sulzer, Fürth, Fr, 2016-07-29
  * 
- * @version 1.0, 2015-08-11 (tryParse functions are nearly fully tested
+ * @version 1.1, added ltrimZeroes() methods, required for the tryParse()
+ * methods. Without there may be false results if the string has leading
+ * zeroes. There is now also another static public function:
+ * public static String ltrimZeroes(String numberString)
+ * which removes leading zeroes. Works for positive and negative "numbers".
+ * 
+ * Version 1.0, 2015-08-11 (tryParse functions are nearly fully tested
  * with unit-tests, a lot of the other functions (mostly very simple)
  * have also been already tested with unit tests (using JUnit). Developed
  * with JetBrains IntelliJ (Community Edition) version 2016.2.
@@ -409,6 +415,9 @@ public class IntBox implements Cloneable {
     // Integer.tryParse(String s,IntBox intBox). Not tested if it is
     // really faster, cause I have no access to a real 68000'er Computer
     // with a JRE.
+    //public static boolean tryParse(String s,IntBox intBox) {
+    // To run the unit tests uncomment previous line, name the real tryParse
+    // method to "Old name" (see comments below) and comment next line
     public static boolean tryParseWithTable(String s,IntBox intBox) {
         if (intBox == null)
             // intBox=new IntBox(); // This doesn't work, as intBox itself is
@@ -421,6 +430,10 @@ public class IntBox implements Cloneable {
         char c=s.charAt(0);
         if (c == '-')
             negative=true;
+        if (len > MAX_INT_LEN) {
+            s = ltrimZeroes(s);
+            len = s.length();
+        }
         if (len > MAX_INT_LEN) {
             if (!negative || len > MIN_INT_LEN)
                 return false;
@@ -460,6 +473,24 @@ public class IntBox implements Cloneable {
         return true;
     }
 
+    // ltrimZeroes() methods added 2016 08 16 (are required by tryParse() methods)
+    public static String ltrimZeroes(String s) {
+        if (s.charAt(0) == '-')
+            return ltrimZeroesNegative(s);
+        else
+            return ltrimZeroesPositive(s);
+    }
+    protected static String ltrimZeroesNegative(String s) {
+        int i=1;
+        for ( ; s.charAt(i) == '0'; i++);
+        return ("-"+s.substring(i));
+    }
+    protected static String ltrimZeroesPositive(String s) {
+        int i=0;
+        for ( ; s.charAt(i) == '0'; i++);
+        return (s.substring(i));
+    }
+
     // Old name:
     //public static boolean tryParseBackward(String s,IntBox intBox) {
     // New name (as this method seems to be the fastest):
@@ -474,6 +505,10 @@ public class IntBox implements Cloneable {
         int rslt=0, d, dfirst=0, i, j;
         char c=s.charAt(0);
         if (c == '-') {
+            if (len > MIN_INT_LEN) { // corrected (added) 2016 08 17
+                s = ltrimZeroesNegative(s);
+                len = s.length();
+            }
             if (len >= MIN_INT_LEN) {
                 c = s.charAt(1);
                 if (!Character.isDigit(c))
@@ -499,6 +534,10 @@ public class IntBox implements Cloneable {
                 rslt -= dfirst * j;
             }
         } else {
+            if (len > MAX_INT_LEN) { // corrected (added) 2016 08 16
+                s = ltrimZeroesPositive(s);
+                len=s.length();
+            }
             if (len >= MAX_INT_LEN) {
                 c = s.charAt(0);
                 if (!Character.isDigit(c))
@@ -518,10 +557,11 @@ public class IntBox implements Cloneable {
                 if (!Character.isDigit(c))
                     return false;
                 rslt += (c-'0')*j;
+            } else { // corrected: 2015 08 17
+                if (dfirst >= MAX_INT_FIRSTDIGIT && rslt > MAX_INT_LASTDEC)
+                    return false;
+                rslt += dfirst * j;
             }
-            if (dfirst >= MAX_INT_FIRSTDIGIT && rslt > MAX_INT_LASTDEC)
-                return false;
-            rslt += dfirst*j;
         }
         intBox._n=rslt;
         return true;
